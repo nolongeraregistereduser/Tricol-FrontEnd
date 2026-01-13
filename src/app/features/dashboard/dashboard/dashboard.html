@@ -1,0 +1,33 @@
+<div class="dashboard-container">
+  <mat-card class="welcome-card">
+    <mat-card-header>
+      <mat-card-title>
+        <h1>Tableau de bord TRICOL</h1>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="currentUser" class="user-info">
+        <mat-icon>account_circle</mat-icon>
+        <div>
+          <h2>Bienvenue, {{ currentUser.fullName || currentUser.username }}!</h2>
+          <p>Email: {{ currentUser.email }}</p>
+          <p>Rôles: {{ currentUser.roles.join(', ') }}</p>
+        </div>
+      </div>
+
+      <div class="info-message">
+        <mat-icon>info</mat-icon>
+        <p>Vous êtes connecté avec succès. L'authentification JWT fonctionne correctement.</p>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="warn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Se déconnecter
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+

@@ -1,59 +1,245 @@
-# TricolFrontend
+# 🏢 TRICOL Frontend - Gestion des Approvisionnements et Stocks
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.14.
+Application Angular 20 pour la gestion des approvisionnements, stocks (méthode FIFO), et bons de sortie de l'entreprise TRICOL.
 
-## Development server
+## 📋 Statut du projet
 
-To start a local development server, run:
+✅ **Authentification JWT complète** - Prête à tester avec le backend Spring Boot
 
+## 🚀 Démarrage rapide
+
+### Prérequis
+- Node.js v20+
+- npm v11+
+- Backend Spring Boot accessible
+
+### Installation
 ```bash
-ng serve
+# Installer les dépendances
+npm install
+
+# Lancer le serveur de développement
+ng serve --open
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+L'application s'ouvre automatiquement sur **http://localhost:4200**
 
-## Code scaffolding
+## ⚙️ Configuration Backend
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+**Par défaut**, l'app se connecte à : `http://localhost:8080`
 
-```bash
-ng generate component component-name
+**Pour modifier l'URL** :
+1. Ouvre `src/environments/environment.ts`
+2. Modifie la ligne `apiUrl: 'http://localhost:XXXX'`
+3. Sauvegarde (l'app se recharge automatiquement)
+
+### Configurer CORS dans Spring Boot
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:4200")
+                .allowedMethods("*")
+                .allowedHeaders("*");
+    }
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🎯 Fonctionnalités implémentées
 
-```bash
-ng generate --help
+### ✅ Module Authentification
+- [x] Page de login (Material Design)
+- [x] AuthService (login, logout, refresh)
+- [x] TokenService (gestion JWT)
+- [x] AuthInterceptor (ajout automatique du token)
+- [x] AuthGuard (protection des routes)
+- [x] Refresh automatique du token
+- [x] Redirection intelligente
+
+### 🚧 À venir (prochaines étapes)
+- [ ] Module Produits (CRUD, alertes stock)
+- [ ] Module Fournisseurs (CRUD)
+- [ ] Module Commandes (création, validation, réception)
+- [ ] Module Stock (lots, FIFO, valorisation)
+- [ ] Module Bons de Sortie (création, validation)
+- [ ] Module Admin (users, roles, permissions)
+- [ ] Dashboard KPI
+
+## 📁 Structure du projet
+
+```
+src/app/
+├── core/                        # Services singleton, guards, interceptors
+│   ├── services/
+│   │   ├── auth.ts             # ✅ Service authentification
+│   │   └── token.ts            # ✅ Gestion tokens JWT
+│   ├── interceptors/
+│   │   └── auth-interceptor.ts # ✅ Ajout auto token + refresh
+│   ├── guards/
+│   │   └── auth-guard.ts       # ✅ Protection routes
+│   └── models/                  # Interfaces TypeScript
+│
+├── features/                    # Modules fonctionnels
+│   ├── auth/login/             # ✅ Page connexion
+│   └── dashboard/dashboard/    # ✅ Dashboard protégé
+│
+├── app.routes.ts               # Configuration routes
+└── app.config.ts               # Configuration app
 ```
 
-## Building
+## 📖 Documentation
 
-To build the project run:
+| Fichier | Description |
+|---------|-------------|
+| **START_HERE.md** | 🎯 Guide ultra-rapide pour commencer |
+| **TEST_AUTH.md** | 🧪 Guide test authentification (3 min) |
+| **BACKEND_CONFIGURATION.md** | 🔧 Configuration backend détaillée |
+| **AUTH_IMPLEMENTATION.md** | 📚 Documentation technique auth |
+| **IMPLEMENTATION_PLAN.md** | 📋 Roadmap complète du projet |
+| **QUICKSTART.md** | 🚀 Guide de démarrage complet |
 
+## 🧪 Tester l'authentification
+
+### 1. Backend démarré
 ```bash
-ng build
+curl http://localhost:8080
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+### 2. Lance Angular
 ```bash
-ng test
+ng serve --open
 ```
 
-## Running end-to-end tests
+### 3. Teste la connexion
+- Page de login s'affiche
+- Entre tes credentials backend
+- Clique "Se connecter"
+- ✅ Dashboard affiché si succès
 
-For end-to-end (e2e) testing, run:
+## 🛠️ Scripts disponibles
 
 ```bash
-ng e2e
+# Développement
+ng serve                    # Démarrer dev server
+ng serve --open            # Démarrer + ouvrir navigateur
+
+# Build
+ng build                    # Build de développement
+ng build --configuration production  # Build de production
+
+# Tests
+ng test                     # Tests unitaires
+ng lint                     # Linter
+
+# Génération
+ng generate component nom   # Nouveau composant
+ng generate service nom     # Nouveau service
+ng generate module nom      # Nouveau module
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🔐 Endpoints Backend requis
 
-## Additional Resources
+```
+POST /auth/login       → Connexion (email, password)
+POST /auth/refresh     → Refresh token
+GET  /users/me         → Infos utilisateur connecté
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🎨 Stack Technique
+
+- **Framework** : Angular 20
+- **UI Library** : Angular Material
+- **Forms** : Reactive Forms
+- **HTTP** : HttpClient + Interceptors
+- **Routing** : Angular Router + Guards
+- **Auth** : JWT (localStorage)
+- **Notifications** : ngx-toastr
+
+## 🐛 Débogage
+
+### Console navigateur (F12)
+- **Console** : Erreurs JavaScript
+- **Network** : Requêtes HTTP
+- **Application → Local Storage** : Tokens JWT
+
+### Vérifier le token
+1. Connecte-toi
+2. Ouvre DevTools → Application → Local Storage
+3. Copie `tricol_access_token`
+4. Décode sur https://jwt.io
+
+## 🆘 Problèmes courants
+
+### ❌ Erreur CORS
+```
+Access-Control-Allow-Origin blocked
+```
+→ Configure CORS dans Spring Boot (voir ci-dessus)
+
+### ❌ "Impossible de se connecter"
+```
+Http failure response: 0 Unknown Error
+```
+→ Backend pas démarré OU mauvaise URL dans `environment.ts`
+
+### ❌ Erreur 401
+```
+Email ou mot de passe incorrect
+```
+→ Vérifie les credentials dans la base de données
+
+### ❌ Erreur 404
+```
+404 Not Found /auth/login
+```
+→ Endpoint différent dans le backend ? Modifie `environment.ts`
+
+## 📦 Build & Déploiement
+
+### Build de production
+```bash
+ng build --configuration production
+```
+
+Les fichiers optimisés sont dans `dist/tricol-frontend/`
+
+### Docker (à venir)
+```dockerfile
+# Dockerfile multi-stage avec Nginx
+FROM node:20 AS build
+WORKDIR /app
+COPY . .
+RUN npm ci && npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist/tricol-frontend /usr/share/nginx/html
+```
+
+## 🤝 Contribution
+
+Modules à développer (ordre suggéré) :
+1. **Produits** : CRUD + alertes stock
+2. **Fournisseurs** : CRUD
+3. **Stock** : Lots, FIFO, valorisation
+4. **Commandes** : Création, validation, réception
+5. **Bons de Sortie** : Création, validation
+6. **Admin** : Users, roles, permissions
+7. **Dashboard** : KPI temps réel
+
+## 📄 Licence
+
+Propriété de TRICOL - 2025
+
+## 📞 Support
+
+Consulte la documentation dans les fichiers `.md` à la racine du projet.
+
+---
+
+**Status** : ✅ Authentification fonctionnelle - Prêt à tester avec le backend
+
+**Version** : 1.0.0-auth-mvp
+
