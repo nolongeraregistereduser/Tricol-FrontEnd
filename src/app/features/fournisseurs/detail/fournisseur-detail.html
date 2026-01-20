@@ -1,0 +1,132 @@
+<div class="detail-container">
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des détails du fournisseur...</p>
+  </div>
+
+  <!-- Détails du fournisseur -->
+  <div *ngIf="!loading && fournisseur" class="detail-content">
+    <!-- En-tête avec actions -->
+    <div class="header-section">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>
+          <mat-icon>business</mat-icon>
+          {{ fournisseur.raisonSociale }}
+        </h1>
+        <p class="subtitle">Détails du fournisseur</p>
+      </div>
+      <div class="actions">
+        <button mat-raised-button color="accent" (click)="editFournisseur()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-raised-button color="warn" (click)="deleteFournisseur()">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <!-- Informations principales -->
+    <div class="cards-grid">
+      <!-- Informations générales -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Informations Générales
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>business</mat-icon>
+              Raison Sociale
+            </div>
+            <div class="info-value">{{ fournisseur.raisonSociale }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>badge</mat-icon>
+              ICE
+            </div>
+            <div class="info-value">
+              <mat-chip>{{ fournisseur.ice }}</mat-chip>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Contact -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>contact_mail</mat-icon>
+            Contact
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>person</mat-icon>
+              Personne de Contact
+            </div>
+            <div class="info-value">{{ fournisseur.contactPerson }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>email</mat-icon>
+              Email
+            </div>
+            <div class="info-value">
+              <a [href]="'mailto:' + fournisseur.email" class="email-link">
+                {{ fournisseur.email }}
+              </a>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>phone</mat-icon>
+              Téléphone
+            </div>
+            <div class="info-value">
+              <a [href]="'tel:' + fournisseur.phone" class="phone-link">
+                {{ fournisseur.phone }}
+              </a>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Adresse -->
+      <mat-card class="info-card full-width">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>location_on</mat-icon>
+            Adresse
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>home</mat-icon>
+              Adresse
+            </div>
+            <div class="info-value">{{ fournisseur.address }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>location_city</mat-icon>
+              Ville
+            </div>
+            <div class="info-value">{{ fournisseur.city }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

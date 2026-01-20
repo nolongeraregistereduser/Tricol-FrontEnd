@@ -1,0 +1,155 @@
+<div class="fournisseurs-container">
+  <!-- En-tête avec titre et bouton d'ajout -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>
+        <mat-icon>business</mat-icon>
+        Gestion des Fournisseurs
+      </h1>
+      <p class="subtitle">Gérez vos fournisseurs et leurs informations</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="createFournisseur()" class="add-button">
+      <mat-icon>add</mat-icon>
+      Nouveau Fournisseur
+    </button>
+  </div>
+
+  <!-- Barre de recherche et filtres -->
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher un fournisseur</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Raison sociale, contact, email, ville...">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Tableau des fournisseurs -->
+  <mat-card class="table-card">
+    <div class="table-container">
+      <!-- Loading spinner -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement des fournisseurs...</p>
+      </div>
+
+      <!-- Tableau -->
+      <table mat-table [dataSource]="dataSource" matSort class="fournisseurs-table">
+        <!-- Colonne Raison Sociale -->
+        <ng-container matColumnDef="raisonSociale">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Raison Sociale</th>
+          <td mat-cell *matCellDef="let fournisseur">
+            <div class="cell-content">
+              <strong>{{ fournisseur.raisonSociale }}</strong>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Contact -->
+        <ng-container matColumnDef="contactPerson">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact</th>
+          <td mat-cell *matCellDef="let fournisseur">
+            <div class="cell-content">
+              <mat-icon class="icon-small">person</mat-icon>
+              {{ fournisseur.contactPerson }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let fournisseur">
+            <div class="cell-content">
+              <mat-icon class="icon-small">email</mat-icon>
+              <a [href]="'mailto:' + fournisseur.email" class="email-link">
+                {{ fournisseur.email }}
+              </a>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Téléphone -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+          <td mat-cell *matCellDef="let fournisseur">
+            <div class="cell-content">
+              <mat-icon class="icon-small">phone</mat-icon>
+              {{ fournisseur.phone }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Ville -->
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Ville</th>
+          <td mat-cell *matCellDef="let fournisseur">
+            <div class="cell-content">
+              <mat-icon class="icon-small">location_on</mat-icon>
+              {{ fournisseur.city }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne ICE -->
+        <ng-container matColumnDef="ice">
+          <th mat-header-cell *matHeaderCellDef>ICE</th>
+          <td mat-cell *matCellDef="let fournisseur">
+            <mat-chip>{{ fournisseur.ice }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+          <td mat-cell *matCellDef="let fournisseur" class="actions-cell">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="viewFournisseur(fournisseur.id!)"
+              matTooltip="Voir les détails"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="editFournisseur(fournisseur.id!)"
+              matTooltip="Modifier"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteFournisseur(fournisseur)"
+              matTooltip="Supprimer"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+
+        <!-- Message si aucun résultat -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data">
+              <mat-icon>inbox</mat-icon>
+              <p>Aucun fournisseur trouvé</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        [pageSize]="10"
+        showFirstLastButtons
+        aria-label="Sélectionner la page"
+      ></mat-paginator>
+    </div>
+  </mat-card>
+</div>

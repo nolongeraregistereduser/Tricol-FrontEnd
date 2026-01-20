@@ -60,6 +60,34 @@ export const routes: Routes = [
     ]
   },
 
+  // Module Gestion des Fournisseurs
+  {
+    path: 'fournisseurs',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/fournisseurs/list/fournisseurs-list').then((m) => m.FournisseursListComponent),
+      },
+      {
+        path: 'new',
+        loadComponent: () =>
+          import('./features/fournisseurs/form/fournisseur-form').then((m) => m.FournisseurFormComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./features/fournisseurs/detail/fournisseur-detail').then((m) => m.FournisseurDetailComponent),
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () =>
+          import('./features/fournisseurs/form/fournisseur-form').then((m) => m.FournisseurFormComponent),
+      },
+    ],
+  },
+
   // Route 404
   {
     path: '**',

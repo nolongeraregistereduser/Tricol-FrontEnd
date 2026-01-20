@@ -7,6 +7,7 @@ export const environment = {
     users: '/api/users',
     products: '/api/products',
     suppliers: '/api/suppliers',
+    fournisseurs: '/api/v1/fournisseurs',  // CRUD Fournisseurs
     orders: '/api/orders',
     stock: '/api/stocks',
     lots: '/api/lots',

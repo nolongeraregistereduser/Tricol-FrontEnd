@@ -1,0 +1,141 @@
+<div class="form-container">
+  <mat-card class="form-card">
+    <!-- En-tête -->
+    <div class="header">
+      <button mat-icon-button (click)="cancel()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>
+          <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+          {{ isEditMode ? 'Modifier le Fournisseur' : 'Nouveau Fournisseur' }}
+        </h1>
+        <p class="subtitle">
+          {{ isEditMode ? 'Modifiez les informations du fournisseur' : 'Remplissez les informations du nouveau fournisseur' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Formulaire -->
+    <form [formGroup]="fournisseurForm" (ngSubmit)="onSubmit()" class="form-content">
+      <!-- Loading spinner -->
+      <div *ngIf="loading && isEditMode" class="loading-overlay">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Grille de champs -->
+      <div class="form-grid">
+        <!-- Raison Sociale -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Raison Sociale *</mat-label>
+          <input matInput formControlName="raisonSociale" placeholder="Ex: Fournisseur Textiles SA">
+          <mat-icon matPrefix>business</mat-icon>
+          <mat-error *ngIf="fournisseurForm.get('raisonSociale')?.hasError('required') && fournisseurForm.get('raisonSociale')?.touched">
+            {{ getErrorMessage('raisonSociale') }}
+          </mat-error>
+          <mat-error *ngIf="fournisseurForm.get('raisonSociale')?.hasError('minlength') && fournisseurForm.get('raisonSociale')?.touched">
+            {{ getErrorMessage('raisonSociale') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Personne de Contact -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Personne de Contact *</mat-label>
+          <input matInput formControlName="contactPerson" placeholder="Ex: Ahmed Bennani">
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="fournisseurForm.get('contactPerson')?.hasError('required') && fournisseurForm.get('contactPerson')?.touched">
+            {{ getErrorMessage('contactPerson') }}
+          </mat-error>
+          <mat-error *ngIf="fournisseurForm.get('contactPerson')?.hasError('minlength') && fournisseurForm.get('contactPerson')?.touched">
+            {{ getErrorMessage('contactPerson') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email *</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="Ex: contact@textiles-sa.ma">
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="fournisseurForm.get('email')?.hasError('required') && fournisseurForm.get('email')?.touched">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+          <mat-error *ngIf="fournisseurForm.get('email')?.hasError('email') && fournisseurForm.get('email')?.touched">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Téléphone -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Téléphone *</mat-label>
+          <input matInput formControlName="phone" placeholder="Ex: 0522123456">
+          <mat-icon matPrefix>phone</mat-icon>
+          <mat-error *ngIf="fournisseurForm.get('phone')?.hasError('required') && fournisseurForm.get('phone')?.touched">
+            {{ getErrorMessage('phone') }}
+          </mat-error>
+          <mat-error *ngIf="fournisseurForm.get('phone')?.hasError('pattern') && fournisseurForm.get('phone')?.touched">
+            {{ getErrorMessage('phone') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Adresse -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse *</mat-label>
+          <input matInput formControlName="address" placeholder="Ex: 123 Boulevard Mohammed V">
+          <mat-icon matPrefix>home</mat-icon>
+          <mat-error *ngIf="fournisseurForm.get('address')?.hasError('required') && fournisseurForm.get('address')?.touched">
+            {{ getErrorMessage('address') }}
+          </mat-error>
+          <mat-error *ngIf="fournisseurForm.get('address')?.hasError('minlength') && fournisseurForm.get('address')?.touched">
+            {{ getErrorMessage('address') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Ville -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Ville *</mat-label>
+          <input matInput formControlName="city" placeholder="Ex: Casablanca">
+          <mat-icon matPrefix>location_on</mat-icon>
+          <mat-error *ngIf="fournisseurForm.get('city')?.hasError('required') && fournisseurForm.get('city')?.touched">
+            {{ getErrorMessage('city') }}
+          </mat-error>
+          <mat-error *ngIf="fournisseurForm.get('city')?.hasError('minlength') && fournisseurForm.get('city')?.touched">
+            {{ getErrorMessage('city') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- ICE -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>ICE (Identifiant Commun de l'Entreprise) *</mat-label>
+          <input matInput formControlName="ice" placeholder="Ex: 001234567890001" maxlength="15">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-hint>15 chiffres requis</mat-hint>
+          <mat-error *ngIf="fournisseurForm.get('ice')?.hasError('required') && fournisseurForm.get('ice')?.touched">
+            {{ getErrorMessage('ice') }}
+          </mat-error>
+          <mat-error *ngIf="fournisseurForm.get('ice')?.hasError('pattern') && fournisseurForm.get('ice')?.touched">
+            {{ getErrorMessage('ice') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="form-actions">
+        <button mat-button type="button" (click)="cancel()" class="cancel-button">
+          <mat-icon>close</mat-icon>
+          Annuler
+        </button>
+        <button
+          mat-raised-button
+          type="submit"
+          color="primary"
+          [disabled]="fournisseurForm.invalid || loading"
+          class="submit-button"
+        >
+          <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
+          <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          {{ isEditMode ? 'Enregistrer les modifications' : 'Créer le fournisseur' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>
