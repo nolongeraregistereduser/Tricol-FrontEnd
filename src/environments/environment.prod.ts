@@ -5,7 +5,7 @@ export const environment = {
   apiEndpoints: {
     auth: '/api/auth',
     users: '/api/users',
-    products: '/api/products',
+    products: '/api/v1/produits',  // CRUD Produits
     suppliers: '/api/suppliers',
     fournisseurs: '/api/v1/fournisseurs',  // CRUD Fournisseurs
     orders: '/api/orders',

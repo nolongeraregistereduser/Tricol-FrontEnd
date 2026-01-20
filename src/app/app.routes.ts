@@ -88,6 +88,34 @@ export const routes: Routes = [
     ],
   },
 
+  // Module Gestion des Produits
+  {
+    path: 'produits',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/produits/list/produits-list').then((m) => m.ProduitsListComponent),
+      },
+      {
+        path: 'new',
+        loadComponent: () =>
+          import('./features/produits/form/produit-form').then((m) => m.ProduitFormComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./features/produits/detail/produit-detail').then((m) => m.ProduitDetailComponent),
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () =>
+          import('./features/produits/form/produit-form').then((m) => m.ProduitFormComponent),
+      },
+    ],
+  },
+
   // Route 404
   {
     path: '**',

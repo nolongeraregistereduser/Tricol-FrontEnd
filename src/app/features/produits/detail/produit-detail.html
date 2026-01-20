@@ -1,0 +1,130 @@
+<div class="detail-container">
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des détails du produit...</p>
+  </div>
+
+  <!-- Détails du produit -->
+  <div *ngIf="!loading && produit" class="detail-content">
+    <!-- En-tête avec actions -->
+    <div class="header-section">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>
+          <mat-icon>inventory_2</mat-icon>
+          {{ produit.name }}
+        </h1>
+        <p class="subtitle">Détails du produit</p>
+      </div>
+      <div class="actions">
+        <button mat-raised-button color="accent" (click)="editProduit()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-raised-button color="warn" (click)="deleteProduit()">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <!-- Informations principales -->
+    <div class="cards-grid">
+      <!-- Informations générales -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Informations Générales
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>tag</mat-icon>
+              Référence
+            </div>
+            <div class="info-value">
+              <strong>{{ produit.reference }}</strong>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>inventory_2</mat-icon>
+              Nom
+            </div>
+            <div class="info-value">{{ produit.name }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>category</mat-icon>
+              Catégorie
+            </div>
+            <div class="info-value">
+              <mat-chip>{{ getCategoryLabel(produit.category) }}</mat-chip>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Prix et Stock -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>attach_money</mat-icon>
+            Prix et Stock
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>monetization_on</mat-icon>
+              Prix Unitaire
+            </div>
+            <div class="info-value price-value">
+              {{ formatPrice(produit.unitPrice) }}
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>warning</mat-icon>
+              Point de Commande
+            </div>
+            <div class="info-value">
+              {{ produit.reorderPoint }} {{ getUnitLabel(produit.unitOfMeasure) }}
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <mat-icon>straighten</mat-icon>
+              Unité de Mesure
+            </div>
+            <div class="info-value">
+              {{ getUnitLabel(produit.unitOfMeasure) }}
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Description -->
+      <mat-card class="info-card full-width">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>description</mat-icon>
+            Description
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-item">
+            <div class="info-value description-text">
+              {{ produit.description }}
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

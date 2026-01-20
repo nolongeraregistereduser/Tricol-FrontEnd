@@ -1,0 +1,166 @@
+<div class="produits-container">
+  <!-- En-tête avec titre et bouton d'ajout -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>
+        <mat-icon>inventory_2</mat-icon>
+        Gestion des Produits
+      </h1>
+      <p class="subtitle">Gérez vos produits et leurs informations</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="createProduit()" class="add-button">
+      <mat-icon>add</mat-icon>
+      Nouveau Produit
+    </button>
+  </div>
+
+  <!-- Barre de recherche et filtres -->
+  <mat-card class="filters-card">
+    <div class="filters-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher un produit</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Référence, nom, description...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="category-field">
+        <mat-label>Catégorie</mat-label>
+        <mat-select [formControl]="categoryFilter">
+          <mat-option value="">Toutes les catégories</mat-option>
+          <mat-option *ngFor="let option of categoryOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-button (click)="clearFilters()" class="clear-button">
+        <mat-icon>clear</mat-icon>
+        Réinitialiser
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Tableau des produits -->
+  <mat-card class="table-card">
+    <div class="table-container">
+      <!-- Loading spinner -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement des produits...</p>
+      </div>
+
+      <!-- Tableau -->
+      <table mat-table [dataSource]="dataSource" matSort class="produits-table">
+        <!-- Colonne Référence -->
+        <ng-container matColumnDef="reference">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Référence</th>
+          <td mat-cell *matCellDef="let produit">
+            <div class="cell-content">
+              <strong>{{ produit.reference }}</strong>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Nom -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+          <td mat-cell *matCellDef="let produit">
+            <div class="cell-content">
+              {{ produit.name }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Catégorie -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Catégorie</th>
+          <td mat-cell *matCellDef="let produit">
+            <mat-chip>{{ getCategoryLabel(produit.category) }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Prix Unitaire -->
+        <ng-container matColumnDef="unitPrice">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix Unitaire</th>
+          <td mat-cell *matCellDef="let produit">
+            <div class="cell-content price-cell">
+              {{ formatPrice(produit.unitPrice) }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Point de Commande -->
+        <ng-container matColumnDef="reorderPoint">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Point de Commande</th>
+          <td mat-cell *matCellDef="let produit">
+            <div class="cell-content">
+              {{ produit.reorderPoint }} {{ produit.unitOfMeasure }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Unité de Mesure -->
+        <ng-container matColumnDef="unitOfMeasure">
+          <th mat-header-cell *matHeaderCellDef>Unité</th>
+          <td mat-cell *matCellDef="let produit">
+            <div class="cell-content">
+              {{ produit.unitOfMeasure }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+          <td mat-cell *matCellDef="let produit" class="actions-cell">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="viewProduit(produit.id!)"
+              matTooltip="Voir les détails"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="editProduit(produit.id!)"
+              matTooltip="Modifier"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteProduit(produit)"
+              matTooltip="Supprimer"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+
+        <!-- Message si aucun résultat -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data">
+              <mat-icon>inbox</mat-icon>
+              <p>Aucun produit trouvé</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        [pageSize]="10"
+        showFirstLastButtons
+        aria-label="Sélectionner la page"
+      ></mat-paginator>
+    </div>
+  </mat-card>
+</div>

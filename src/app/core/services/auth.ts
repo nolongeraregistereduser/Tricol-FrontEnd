@@ -100,7 +100,11 @@ export class AuthService {
       }),
       catchError((error) => {
         console.error('Erreur lors du refresh du token:', error);
-        this.logout();
+        // Ne déconnecter que si c'est vraiment une erreur d'authentification (401, 403)
+        // Ne pas déconnecter si c'est une erreur 404 (endpoint n'existe pas) ou erreur réseau
+        if (error.status === 401 || error.status === 403) {
+          this.logout();
+        }
         return throwError(() => error);
       })
     );
