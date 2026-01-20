@@ -1,10 +1,10 @@
 // Environnement de développement
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080', // ← Modifie cette URL selon ton backend Spring Boot
+  apiUrl: 'http://localhost:9091', // Backend Spring Boot sur port 9091
   apiEndpoints: {
-    auth: '/auth',        // POST /auth/login, /auth/refresh, /auth/register
-    users: '/users',      // GET /users/me
+    auth: '/api/auth',    // POST /api/auth/login, /api/auth/refresh, /api/auth/register
+    users: '/api/users',  // GET /api/users/me
     products: '/api/products',
     suppliers: '/api/suppliers',
     orders: '/api/orders',

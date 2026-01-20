@@ -3,8 +3,8 @@ export const environment = {
   production: true,
   apiUrl: 'https://api.tricol.com', // ← URL de production (à configurer)
   apiEndpoints: {
-    auth: '/auth',
-    users: '/users',
+    auth: '/api/auth',
+    users: '/api/users',
     products: '/api/products',
     suppliers: '/api/suppliers',
     orders: '/api/orders',

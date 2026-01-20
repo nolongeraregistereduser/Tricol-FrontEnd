@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,6 +16,7 @@ import { AuthService } from '../../../core/services/auth';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -36,17 +37,26 @@ export class LoginComponent implements OnInit {
   loading = false;
   errorMessage = '';
   hidePassword = true;
-  returnUrl = '/dashboard';
+  registrationSuccess = false;
 
   ngOnInit(): void {
     // Initialiser le formulaire
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
-
-    // Récupérer l'URL de retour depuis les query params
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    
+    // Vérifier si l'utilisateur vient de s'inscrire
+    const registered = this.route.snapshot.queryParams['registered'];
+    const username = this.route.snapshot.queryParams['username'];
+    
+    if (registered === 'true') {
+      this.registrationSuccess = true;
+      // Pré-remplir le username si fourni
+      if (username) {
+        this.loginForm.patchValue({ username });
+      }
+    }
   }
 
   /**
@@ -63,25 +73,48 @@ export class LoginComponent implements OnInit {
     const credentials = this.loginForm.value;
 
     this.authService.login(credentials).subscribe({
-      next: () => {
-        // Rediriger vers la page demandée ou dashboard
-        this.router.navigate([this.returnUrl]);
+      next: (user) => {
+        this.loading = false;
+        console.log('✅ Authentification réussie, utilisateur:', user);
+        // Rediriger vers le dashboard approprié selon le rôle
+        const dashboardRoute = this.getDashboardRoute(user.roles);
+        console.log('🚀 Redirection vers:', dashboardRoute);
+        this.router.navigate([dashboardRoute]);
       },
       error: (error) => {
         this.loading = false;
-        // Gérer les erreurs de login
+        console.error('❌ Erreur d\'authentification:', error);
+        
+        // Erreur de login
         if (error.status === 401) {
-          this.errorMessage = 'Email ou mot de passe incorrect';
+          this.errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect';
         } else if (error.status === 0) {
           this.errorMessage = 'Impossible de se connecter au serveur';
+        } else if (error.status === 400) {
+          this.errorMessage = 'Données de connexion invalides';
         } else {
           this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
         }
-      },
-      complete: () => {
-        this.loading = false;
-      },
+      }
     });
+  }
+
+  /**
+   * Détermine la route du dashboard selon le rôle de l'utilisateur
+   */
+  private getDashboardRoute(roles: string[]): string {
+    // L'utilisateur peut avoir plusieurs rôles, on prend le premier dans l'ordre de priorité
+    if (roles.includes('ADMIN')) {
+      return '/dashboard/admin';
+    } else if (roles.includes('RESPONSABLE_ACHATS')) {
+      return '/dashboard/responsable-achats';
+    } else if (roles.includes('MAGASINIER')) {
+      return '/dashboard/magasinier';
+    } else if (roles.includes('CHEF_ATELIER')) {
+      return '/dashboard/chef-atelier';
+    }
+    // Par défaut, rediriger vers le dashboard admin
+    return '/dashboard/admin';
   }
 
   /**
@@ -92,11 +125,9 @@ export class LoginComponent implements OnInit {
     if (field?.hasError('required')) {
       return 'Ce champ est requis';
     }
-    if (field?.hasError('email')) {
-      return 'Email invalide';
-    }
     if (field?.hasError('minlength')) {
-      return 'Le mot de passe doit contenir au moins 6 caractères';
+      const minLength = field.errors?.['minlength'].requiredLength;
+      return `Minimum ${minLength} caractères requis`;
     }
     return '';
   }

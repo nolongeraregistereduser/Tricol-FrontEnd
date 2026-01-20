@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, catchError, throwError, switchMap } from 'rxjs';
 import { TokenService } from './token';
 import { User, LoginCredentials, RegisterData } from '../models/user.model';
 import { TokenResponse } from '../models/token-response.model';
@@ -24,19 +24,52 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  /**
-   * Login avec email et mot de passe
-   */
-  login(credentials: LoginCredentials): Observable<TokenResponse> {
+
+  login(credentials: LoginCredentials): Observable<User> {
     return this.http.post<TokenResponse>(`${this.AUTH_ENDPOINT}/login`, credentials).pipe(
       tap((response) => {
+        console.log('✅ Login réussi, tokens reçus:', response);
         // Stocker les tokens
         this.tokenService.setTokens(response.accessToken, response.refreshToken);
-        // Récupérer les infos utilisateur
-        this.loadCurrentUser();
+      }),
+      switchMap((response) => {
+        console.log('🔄 Tentative de récupération des infos utilisateur depuis /users/me...');
+        
+        // Essayer de récupérer les infos utilisateur
+        return this.getCurrentUser().pipe(
+          tap((user) => {
+            console.log('✅ Utilisateur récupéré depuis /users/me:', user);
+          }),
+          catchError((userError) => {
+            console.warn('⚠️ Endpoint /users/me non disponible ou erreur:', userError);
+            console.log('📝 Création d\'un utilisateur à partir du token JWT...');
+            
+            // Décoder le token pour extraire les infos
+            const decodedToken = this.tokenService.decodeToken(response.accessToken);
+            console.log('🔍 Token décodé:', decodedToken);
+            
+            // Créer un utilisateur à partir du token
+            const tempUser: User = {
+              id: decodedToken?.sub ? parseInt(decodedToken.sub) : 0,
+              username: decodedToken?.sub || credentials.username,
+              email: decodedToken?.email || credentials.username,
+              fullName: decodedToken?.fullName || credentials.username,
+              roles: decodedToken?.roles || ['ADMIN'],
+              permissions: decodedToken?.permissions || []
+            };
+            
+            console.log('✅ Utilisateur créé depuis le token:', tempUser);
+            this.currentUserSubject.next(tempUser);
+            
+            // Retourner l'utilisateur dans un Observable (IMPORTANT: utiliser 'of' de rxjs)
+            return of(tempUser);
+          })
+        );
       }),
       catchError((error) => {
-        console.error('Erreur lors du login:', error);
+        console.error('❌ Erreur lors du login:', error);
+        // Nettoyer les tokens en cas d'erreur de login
+        this.tokenService.clearTokens();
         return throwError(() => error);
       })
     );
@@ -54,9 +87,7 @@ export class AuthService {
     );
   }
 
-  /**
-   * Refresh du token d'accès
-   */
+
   refreshToken(): Observable<TokenResponse> {
     const refreshToken = this.tokenService.getRefreshToken();
     if (!refreshToken) {
@@ -75,9 +106,7 @@ export class AuthService {
     );
   }
 
-  /**
-   * Logout (déconnexion)
-   */
+
   logout(): void {
     this.tokenService.clearTokens();
     this.currentUserSubject.next(null);

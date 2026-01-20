@@ -17,23 +17,17 @@ export class TokenService {
     return localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }
 
-  /**
-   * Stocke le refresh token dans localStorage
-   */
+
   setRefreshToken(token: string): void {
     localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
   }
 
-  /**
-   * Récupère le refresh token depuis localStorage
-   */
+
   getRefreshToken(): string | null {
     return localStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
-  /**
-   * Stocke les tokens (access + refresh)
-   */
+
   setTokens(accessToken: string, refreshToken?: string): void {
     this.setAccessToken(accessToken);
     if (refreshToken) {
@@ -41,16 +35,12 @@ export class TokenService {
     }
   }
 
-  /**
-   * Vérifie si un access token est présent
-   */
+
   hasValidToken(): boolean {
     return !!this.getAccessToken();
   }
 
-  /**
-   * Supprime tous les tokens (logout)
-   */
+
   clearTokens(): void {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);

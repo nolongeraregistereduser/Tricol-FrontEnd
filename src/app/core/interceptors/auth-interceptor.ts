@@ -16,9 +16,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Récupérer le token
   const token = tokenService.getAccessToken();
 
+  // Ne pas ajouter le token aux requêtes de login, register et refresh
+  const excludedUrls = ['/auth/login', '/auth/register', '/auth/refresh'];
+  const shouldExclude = excludedUrls.some(url => req.url.includes(url));
+
   // Cloner la requête et ajouter le header Authorization si token présent
   let authReq = req;
-  if (token && !req.url.includes('/auth/login') && !req.url.includes('/auth/refresh')) {
+  if (token && !shouldExclude) {
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
@@ -30,7 +34,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       // Si erreur 401 (non autorisé), tenter de refresh le token
-      if (error.status === 401 && !req.url.includes('/auth/refresh')) {
+      // Mais seulement si ce n'est pas une requête de login/register/refresh
+      const isAuthEndpoint = excludedUrls.some(url => req.url.includes(url));
+      
+      if (error.status === 401 && !isAuthEndpoint && tokenService.getRefreshToken()) {
         return authService.refreshToken().pipe(
           switchMap(() => {
             // Réessayer la requête avec le nouveau token
@@ -50,6 +57,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
+      // Pour les erreurs 401 sur login/register, ne pas essayer de refresh
       return throwError(() => error);
     })
   );
